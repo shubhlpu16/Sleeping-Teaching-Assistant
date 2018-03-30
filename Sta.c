@@ -23,7 +23,7 @@ void * TA_check()
 	while(1)
 
 	{
-		sem_wait(&TA_Sleep);		//TA is currently sleeping.
+		sem_wait(&ta_sleep);		//TA is currently sleeping.
 		printf("***************TA is sleeping***************\n");
 		printf("student come\n");
 		printf("***************TA has been awakened by a student.***************\n");
@@ -31,7 +31,7 @@ void * TA_check()
 		{
 			// when Ta is awakend a student occupies space so we have to put lock on chairs
 			pthread_mutex_lock(&ChairAccess);
-			if(chairs_count == 0) // we will check tht if chairs are empty then we unlock the chairs n let them occupy
+			if(chair_count == 0) // we will check tht if chairs are empty then we unlock the chairs n let them occupy
 			{
 				//if chairs are empty, break the loop.
 				pthread_mutex_unlock(&ChairAccess);
@@ -57,25 +57,3 @@ void * TA_check()
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
