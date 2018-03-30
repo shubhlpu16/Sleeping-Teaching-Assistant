@@ -57,3 +57,52 @@ void * TA_check()
 	}
 
 }
+/* this function assume tht each student spends 10 time quanta with Ta n during this time no student can come so we put mutex  on chairs so no other can access chairs . And students occupy seats till all 3 chairs are full. when all the chairs are occupied n at this tym if student came he will return back n come again when waiting chairs become empty*/
+
+
+void *Student_Activity(void *threadID) 
+{
+	int Time_with_ta;
+	while(1)
+
+	{
+
+		printf("Student %ld arrive .\n", (long)threadID);
+
+		Time_with_ta = 10; //let assume each student take 10 time of TA
+		sleep(Time_with_ta);		
+		printf("Student %ld needs help from the TA\n", (long)threadID);
+		pthread_mutex_lock(&ChairAccess); // as student come he sits on chair so put lock
+		int count = chair_count;
+
+		pthread_mutex_unlock(&ChairAccess);
+		if(count < 3)		//if chair count < 3 students will come sit n wait.
+		{
+			if(count == 0)		//If student sits on first empty chair, wake up the TA.
+				sem_post(&ta_sleep); // wake up ta semaphore
+			else
+			printf("Student %ld sat on a chair waiting for the TA to finish. \n", (long)threadID);
+
+			pthread_mutex_lock(&ChairAccess); // mutex lock so no one can sit on preoccupied chair
+
+			int index = (index_chair + chair_count) % 3;
+			chair_count++;
+			printf("Student sat on chair.Chairs Remaining: %d\n", 3 - chair_count);
+			pthread_mutex_unlock(&ChairAccess);
+			// unlock
+			sem_wait(&chair_sem[index]);		//Student leaves his/her chair.
+			printf("\t Student %ld is getting help from the TA. \n", (long)threadID);
+			sem_wait(&student);		//Student waits to go next.
+			printf("Student %ld left TA room.\n",(long)threadID);
+
+		}
+
+		else 
+			printf("Student %ld will return at another time. \n", (long)threadID);
+
+			//If there r no chairs left .
+
+	}
+
+}
+
