@@ -8,7 +8,7 @@ sem_t student;
 sem_t ta_sleep; 
 
 /* threads */
-pthread_t *Students;  //thread for N students 
+pthread_t Students[5];  //thread for N students 
 pthread_t TA; // seprate thread for ta
 
 int chair_count = 0;
@@ -18,7 +18,7 @@ pthread_mutex_t ChairAccess; // mutex to apply locks on chairs
 
 
 /* this function checks that ta is sleeping wakes him up when student come  , if no student is threre i.e chair is empty we unlock chair mutex to allow for occupying seat , when chair is occupied chair count decrements which tells tht only tht number of students can come. And Ta helps the student */
-void * TA_check() 
+void * TA_check(void *threadID) 
 {	
 	while(1)
 
@@ -43,7 +43,7 @@ void * TA_check()
 
 			sem_post(&chair_sem[index_chair]); // we signal the chair tht it has been occupied
 			chair_count--;  // chair occupied so count decrements
-			printf("Student left his/her chair. Remaining Chairs %d\n", 3 - chair_count);
+			printf("Student %d left his/her chair in waiting room n goes to ta. Remaining Chairs %d\n",(long)threadID+1,3 - chair_count);
 			index_chair = (index_chair + 1) % 3;
 			pthread_mutex_unlock(&ChairAccess);
 			// unlock
@@ -57,6 +57,7 @@ void * TA_check()
 	}
 
 }
+
 /* this function assume tht each student spends 10 time quanta with Ta n during this time no student can come so we put mutex  on chairs so no other can access chairs . And students occupy seats till all 3 chairs are full. when all the chairs are occupied n at this tym if student came he will return back n come again when waiting chairs become empty*/
 
 
@@ -105,4 +106,62 @@ void *Student_Activity(void *threadID)
 	}
 
 }
+
+int main()
+
+{
+
+	int number_of_students = 5;		
+
+	int id;
+	//Initializing Mutex Lock and Semaphores.
+
+	sem_init(&ta_sleep, 0, 0);
+
+	sem_init(&student, 0, 0);
+
+	for(id = 0; id < 3; ++id)			//Chairs array of 3 semaphores.
+		sem_init(&chair_sem[id], 0, 0);
+	pthread_mutex_init(&ChairAccess, NULL);
+	//Creating TA thread
+	pthread_create(&TA, NULL, TA_check, (void*) (long)id);	
+	//Creating N student thread here n =5
+	for(id = 0; id < number_of_students; id++)
+		pthread_create(&Students[id], NULL, Student_Activity,(void*) (long)id);
+	//Waiting for TA thread and N Student threads.
+        pthread_join(TA, NULL);
+	for(id = 0; id < number_of_students; id++)
+pthread_join(Students[id], NULL);
+	return 0;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
