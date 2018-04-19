@@ -68,7 +68,7 @@ void *Student_Activity(void *threadID)
 
 	{
 
-		printf("Student %ld arrive .\n", (long)threadID);
+		printf("Student %ld doing assignment .\n", (long)threadID);
 
 		Time_with_ta = 10; //let assume each student take 10 time of TA
 		sleep(Time_with_ta);		
