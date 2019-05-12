@@ -19,19 +19,16 @@ pthread_mutex_t ChairAccess; // mutex to apply locks on chairs
 
 /* this function checks that ta is sleeping wakes him up when student come  , if no student is threre i.e chair is empty we unlock chair mutex to allow for occupying seat , when chair is occupied chair count decrements which tells tht only tht number of students can come. And Ta helps the student */
 void * TA_check()
-{	printf("***************TA is sleeping.***************\n");
-	while(1)
-
-	{
-		sem_wait(&ta_sleep);		//TA is currently sleeping.
+{		printf("***************Ta is sleeping.***************\n");
+		sem_wait(&ta_sleep);	
+			//TA is currently sleeping.
 		printf("student come\n");
 		printf("***************TA has been awakened by a student.***************\n");
-		while(1)
-		{
+		while(1){
 			// when Ta is awakend a student occupies space so we have to put lock on chairs
 			pthread_mutex_lock(&ChairAccess);
 			if(chair_count == 0) // we will check tht if chairs are empty then we unlock the chairs n let them occupy
-			{	printf("***************TA goes to sleep ***************\n");
+			{	printf("***************Ta goes to sleep***************\n");
 				//if chairs are empty, break the loop.
 				pthread_mutex_unlock(&ChairAccess);
 				break;
@@ -53,7 +50,7 @@ void * TA_check()
 
 		}
 
-	}
+
 
 }
 
@@ -63,9 +60,6 @@ void * TA_check()
 void *Student_Check(void *threadID) 
 {
 	int Time_with_ta;
-	while(1)
-
-	{
 
 		printf("Student %ld doing assignment .\n", (long)threadID);
 
@@ -102,7 +96,7 @@ void *Student_Check(void *threadID)
 
 			//If there r no chairs left .
 
-	}
+	
 
 }
 
